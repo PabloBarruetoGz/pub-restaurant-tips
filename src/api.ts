@@ -1,4 +1,5 @@
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '')
+const productionBasePath = import.meta.env.BASE_URL.replace(/\/$/, '')
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:4000' : productionBasePath)
 
 type RequestOptions = RequestInit & {
   json?: unknown

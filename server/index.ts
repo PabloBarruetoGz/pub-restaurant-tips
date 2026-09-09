@@ -5,7 +5,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
 import { Sentry } from './sentry.js'
-import { config, isProduction } from './config.js'
+import { appBasePath, config, isProduction } from './config.js'
 import { asyncHandler, handleApiError, parseOptionalDate } from './http.js'
 import {
   assignDailyTip,
@@ -33,6 +33,13 @@ import {
 const app = express()
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const distDir = path.resolve(currentDir, '../dist')
+
+app.use((request, _response, next) => {
+  if (appBasePath && (request.url === appBasePath || request.url.startsWith(`${appBasePath}/`))) {
+    request.url = request.url.slice(appBasePath.length) || '/'
+  }
+  next()
+})
 
 app.use(cors({ origin: config.CORS_ORIGIN || true }))
 app.use(express.json({ limit: '1mb' }))
@@ -98,7 +105,7 @@ app.post('/api/daily-tips/:id/assign', asyncHandler(async (request, response) =>
 
 if (isProduction) {
   app.use(express.static(distDir))
-  app.get('*', (_request, response) => {
+  app.get(/.*/, (_request, response) => {
     response.sendFile(path.join(distDir, 'index.html'))
   })
 }

@@ -9,6 +9,7 @@ loadDotenv({ path: '.env.sentry-build-plugin', override: false })
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const sentryAuthToken = env.SENTRY_AUTH_TOKEN || process.env.SENTRY_AUTH_TOKEN
+  const base = env.VITE_BASE_PATH || '/'
   const plugins: PluginOption[] = [react()]
 
   if (sentryAuthToken && env.SENTRY_ORG && env.SENTRY_PROJECT) {
@@ -23,6 +24,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    base,
     build: {
       sourcemap: true,
     },

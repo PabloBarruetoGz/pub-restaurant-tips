@@ -1,0 +1,19 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/pub_restaurant_tips/**",
+        "run": {
+          "serviceId": "pub-restaurant-tips",
+          "region": "us-central1"
+        }
+      }
+    ]
+  }
+}
