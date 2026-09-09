@@ -8,7 +8,7 @@
     "dev:web": "vite",
     "dev:api": "node --import tsx --import ./server/sentry.ts server/index.ts",
     "dev:all": "npm run dev",
-    "build": "tsc -b && vite build",
+    "build": "npm run db:generate && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
     "start": "node --import tsx --import ./server/sentry.ts server/index.ts",
