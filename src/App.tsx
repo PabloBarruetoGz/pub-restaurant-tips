@@ -72,7 +72,7 @@ const rolePermissions: Record<RoleId, string[]> = {
   7: ['audit', 'summary'],
 }
 
-const roleDisplayOrder: RoleId[] = [0, 6, 1, 2, 3, 4, 5, 7]
+const roleDisplayOrder: RoleId[] = [0, 1, 2, 3, 4, 5, 7]
 
 type MenuKey = RoleId | 'project' | 'incidents'
 
@@ -617,7 +617,7 @@ function readStoredClosedShiftKeys() {
 
 function App() {
   const [roleId, setRoleId] = useState<RoleId>(6)
-  const [activeMenu, setActiveMenu] = useState<MenuKey>(6)
+  const [activeMenu, setActiveMenu] = useState<MenuKey>(0)
   const [period, setPeriod] = useState<TipFilter>('month')
   const [activeMonth, setActiveMonth] = useState(today.slice(0, 7))
   const [activeYear, setActiveYear] = useState(today.slice(0, 4))
@@ -1636,20 +1636,6 @@ function App() {
         </label>
         <p className="active-role-description">{activeRole.description}</p>
         <nav>
-          <button
-            type="button"
-            className={activeMenu === 'project' ? 'nav-pill active' : 'nav-pill'}
-            onClick={() => setActiveMenu('project')}
-          >
-            Proyecto
-          </button>
-          <button
-            type="button"
-            className={activeMenu === 'incidents' ? 'nav-pill active' : 'nav-pill'}
-            onClick={() => setActiveMenu('incidents')}
-          >
-            Incidencias
-          </button>
           {roleDisplayOrder.map((id) => {
             const role = roles.find((item) => item.id === id) || roles[0]
             return (
@@ -1994,25 +1980,6 @@ function App() {
               {dashboardRows.map((row) => (
                 <CollaboratorCard key={row.collaborator.id} {...row} />
               ))}
-            </div>
-          </section>
-        )}
-
-        {can(activeMenuRole, 'accounts') && activeWorkspaceMenu && (
-          <section className="panel">
-            <div className="panel-title">
-              <ShieldCheck aria-hidden />
-              <h2>Administrador</h2>
-            </div>
-            <div className="admin-grid">
-              <article>
-                <strong>Cuentas y permisos</strong>
-                <p>Crea cuentas por perfil y conserva separadas las responsabilidades de carga, validacion, asignacion y auditoria.</p>
-              </article>
-              <article>
-                <strong>Reglas protegidas</strong>
-                <p>RUT unico, propina diaria unica, turno requerido y turno cumplido antes de asignar.</p>
-              </article>
             </div>
           </section>
         )}
