@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Position {
+  GARZON
+  COCINA
+  BARRA
+  ANFITRION
+  GUARDIA
+  ADMINISTRATIVO
+}
+
+enum AccountRole {
+  DASHBOARD
+  PEOPLE_MANAGER
+  SHIFT_ASSIGNER
+  SHIFT_VALIDATOR
+  TIP_LOADER
+  TIP_ASSIGNER
+  ADMIN
+  AUDITOR
+}
+
+model Account {
+  id        String      @id @default(cuid())
+  email     String      @unique
+  name      String
+  role      AccountRole
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  dailyTips DailyTip[]
+
+  @@index([role])
+}
+
+model Collaborator {
+  id             String          @id @default(cuid())
+  rut            String          @unique
+  firstName      String
+  firstLastName  String
+  secondLastName String
+  name           String          @unique
+  phone          String
+  address        String
+  position       Position
+  startDate      DateTime
+  active         Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  shifts         Shift[]
+  assignments    TipAssignment[]
+
+  @@index([position, active])
+}
+
+model Shift {
+  id             String       @id @default(cuid())
+  collaboratorId String
+  collaborator   Collaborator @relation(fields: [collaboratorId], references: [id])
+  date           DateTime
+  startsAt       String
+  endsAt         String
+  fulfilled      Boolean?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([collaboratorId, date])
+  @@index([date])
+  @@index([date, fulfilled])
+}
+
+model WeeklyShift {
+  id        String   @id @default(cuid())
+  month     String
+  weekIndex Int
+  weekName  String
+  position  Position
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([month, weekIndex, position])
+  @@index([month, position])
+}
+
+model DailyTip {
+  id          String          @id @default(cuid())
+  date        DateTime        @unique
+  amount      Int
+  loadedById  String
+  loadedBy    Account         @relation(fields: [loadedById], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  assignments TipAssignment[]
+
+  @@index([loadedById])
+}
+
+model TipAssignment {
+  id             String       @id @default(cuid())
+  dailyTipId     String
+  dailyTip       DailyTip     @relation(fields: [dailyTipId], references: [id])
+  collaboratorId String
+  collaborator   Collaborator @relation(fields: [collaboratorId], references: [id])
+  amount         Int
+  assignedAt     DateTime     @default(now())
+
+  @@unique([dailyTipId, collaboratorId])
+  @@index([dailyTipId])
+  @@index([collaboratorId])
+}
